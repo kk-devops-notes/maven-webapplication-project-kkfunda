@@ -21,6 +21,7 @@ echo "build number: ${env.BUILD_NUMBER}"
 {
     stage ( 'code checkout from git')
     {
+             notifyBuild('STARTED') 
         git branch: 'DEV', url: 'https://github.com/kk-devops-notes/maven-webapplication-project-kkfunda.git'
     }
     stage ( 'complie code')
