@@ -9,7 +9,7 @@ node
 
 
 
-def mavenHome= tool name: "Maven-practice"
+def mvnhome= tool name: "Maven-practice"
 echo "git branch Name: ${env.BRANCH_NAME}"
 echo "build number: ${env.BUILD_NUMBER}"
 
