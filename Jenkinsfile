@@ -13,6 +13,30 @@ node
     {
        sh "${mvnhome}/bin/mvn  sonar:sonar"
     }   
+
+     stage('SQ Approval') 
+    {
+
+        def decision = input(
+            id: 'SQApproval',
+            message: 'Please review the SonarQube report and approve/reject the pipeline.',
+            parameters: [
+                choice(
+                    name: 'ACTION',
+                    choices: ['Approve', 'Reject'],
+                    description: 'Select your action'
+                )
+            ]
+        )
+
+        if (decision == 'Reject') 
+        {
+            error("Pipeline rejected after SonarQube review.")
+        }
+
+        echo "Pipeline approved. Proceeding to next stage..."
+    }
+    
       stage ( 'Build the artifact')
     {
        sh "${mvnhome}/bin/mvn  package"
