@@ -48,22 +48,23 @@ pipeline
            }
          }
 
-          stage ( 'deploy into Tomcat' )
-         {
-            steps
-            {
-             sh """
+         stage('Deploy into Tomcat') {
+steps {
+withCredentials([
+usernamePassword(
+credentialsId: 'tomcat-cred',
+usernameVariable: 'TOMCAT_USER',
+passwordVariable: 'TOMCAT_PASS'
+)
+]) {
 
-      curl -u admin:123456 \
---upload-file /var/lib/jenkins/workspace/Test-DWPL/target/maven-web-application.war \
-"http://3.110.147.27:8080/manager/text/deploy?path=/maven-web-application&update=true"
-          
-        """
-
-
-           }
-         }
-
+        sh '''
+        curl -u $TOMCAT_USER:$TOMCAT_PASS \
+        --upload-file target/maven-web-application.war \
+        "http://3.110.147.27:8080/manager/text/deploy?path=/maven-web-application&update=true"
+        '''
+    }
+}
 
 
     }
