@@ -1,5 +1,13 @@
 node
 {
+        
+   properties([
+        pipelineTriggers([
+            pollSCM('*/2 * * * *')
+        ])
+    ])
+
+    
     def mvnhome = tool name: 'Maven-practice'
     stage ( 'code checkout from git')
     {
