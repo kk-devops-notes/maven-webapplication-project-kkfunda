@@ -65,6 +65,7 @@ passwordVariable: 'TOMCAT_PASS'
         '''
     }
 }
+}
 
 
     }
