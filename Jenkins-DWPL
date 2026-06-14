@@ -1,0 +1,70 @@
+pipeline
+{
+   agent any
+
+ tools
+  {
+    maven "Maven-practice"
+  }
+
+
+   
+   stages
+    {
+        stage ( 'Git Checkout' )
+         {
+            steps
+            {
+              git branch: 'DEV', url: 'https://github.com/kk-devops-notes/maven-webapplication-project-kkfunda.git'
+
+            }
+         }
+
+        stage ( 'Build artifact' )
+         {
+            steps
+            {
+             sh 'mvn clean package'
+
+           }
+         }
+
+          stage ( 'SQ Report' )
+         {
+            steps
+            {
+             sh 'mvn sonar:sonar'
+
+           }
+         }
+
+
+          stage ( 'deploy into nexus' )
+         {
+            steps
+            {
+             sh 'mvn clean deploy'
+
+           }
+         }
+
+          stage ( 'deploy into Tomcat' )
+         {
+            steps
+            {
+             sh """
+
+      curl -u admin:123456 \
+--upload-file /var/lib/jenkins/workspace/Test-DWPL/target/maven-web-application.war \
+"http://3.110.147.27:8080/manager/text/deploy?path=/maven-web-application&update=true"
+          
+        """
+
+
+           }
+         }
+
+
+
+    }
+}
