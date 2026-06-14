@@ -1,0 +1,80 @@
+pipeline
+{
+   agent any
+
+ tools
+  {
+    maven "Maven-practice"
+  }
+
+
+   
+   stages
+    {
+        stage ( 'Git Checkout' )
+         {
+            steps
+            {
+              git branch: 'PROD', url: 'https://github.com/kk-devops-notes/maven-webapplication-project-kkfunda.git'
+
+            }
+         }
+
+      
+       stage('Maven and Sonar') {
+
+            parallel {
+
+                stage('Build') {
+                    steps {
+                        sh 'mvn clean package'
+                    }
+                }
+
+                stage('Sonar') {
+                    steps {
+                        sh 'mvn sonar:sonar'
+                    }
+                }
+
+            }
+        }
+stage('nexus and tomcat') {
+
+    parallel {
+
+        stage('nexus') {
+            steps {
+                sh 'mvn clean deploy'
+            }
+        }
+
+        stage('tomcat') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'tomcat-cred',
+                        usernameVariable: 'TOMCAT_USER',
+                        passwordVariable: 'TOMCAT_PASS'
+                    )
+                ]) {
+
+                    sh '''
+                    curl -u $TOMCAT_USER:$TOMCAT_PASS \
+                    --upload-file target/maven-web-application.war \
+                    "http://3.110.147.27:8080/manager/text/deploy?path=/maven-web-application&update=true"
+                    '''
+
+                }
+            }
+        }
+
+    }
+}
+
+      
+
+
+        
+    }
+}
